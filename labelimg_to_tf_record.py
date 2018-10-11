@@ -16,10 +16,10 @@
 r"""Convert raw PASCAL dataset to TFRecord for object_detection.
 
 Example usage:
-    python object_detection/dataset_tools/create_pascal_tf_record.py \
-        --data_dir=/home/user/VOCdevkit \
-        --year=VOC2012 \
-        --output_path=/home/user/pascal.record
+  python labelimg_to_tf_record.py \
+          --images_dir=images \
+          --labels=labels \
+          --output_path=.
 """
 from __future__ import absolute_import
 from __future__ import division
@@ -41,7 +41,7 @@ from object_detection.utils import label_map_util
 flags = tf.app.flags
 flags.DEFINE_string('images_dir', 'images', 'Path to images')
 flags.DEFINE_string('labels_dir', 'labels', 'Path to annotations')
-flags.DEFINE_string('output_path', '.', 'Path to output TFRecord')
+flags.DEFINE_string('tfrecord', 'output', 'Path to output TFRecord')
 flags.DEFINE_boolean('ignore_difficult_instances', False, 'Whether to ignore difficult instances')
                      
 FLAGS = flags.FLAGS
