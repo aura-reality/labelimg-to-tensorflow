@@ -31,6 +31,6 @@ Accepts three parameters, they take the defaults as given below:
 ```
 python labelimg_to_tf_record.py \
         --images_dir=images \
-        --labels=labels \
+        --labels_dir=labels \
         --output_path=.
 ```
