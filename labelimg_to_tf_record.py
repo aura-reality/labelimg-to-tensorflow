@@ -19,7 +19,7 @@ Example usage:
   python labelimg_to_tf_record.py \
           --images_dir=images \
           --labels=labels \
-          --output_path=tfrecord
+          --output_path=output
 """
 from __future__ import absolute_import
 from __future__ import division
@@ -41,7 +41,7 @@ from object_detection.utils import label_map_util
 flags = tf.app.flags
 flags.DEFINE_string('images_dir', 'images', 'Path to images')
 flags.DEFINE_string('labels_dir', 'labels', 'Path to annotations')
-flags.DEFINE_string('output_path', 'tfrecord', 'Path to output TFRecord')
+flags.DEFINE_string('output_path', 'output', 'Path to output TFRecord')
 flags.DEFINE_boolean('ignore_difficult_instances', False, 'Whether to ignore difficult instances')
                      
 FLAGS = flags.FLAGS
@@ -106,7 +106,7 @@ def dict_to_tf_example(data,
       classes_text.append(obj['name'].encode('utf8'))
       name = obj['name']
       if name not in label_map_dict: 
-        label_map_dict[name] = len(label_map_dict)
+        label_map_dict[name] = 1 + len(label_map_dict)
       classes.append(label_map_dict[name])
       truncated.append(int(obj['truncated']))
       poses.append(obj['pose'].encode('utf8'))
@@ -140,7 +140,8 @@ def main(_):
 
   labels_dir = FLAGS.labels_dir
 
-  writer = tf.python_io.TFRecordWriter(FLAGS.output_path)
+  os.makedirs(FLAGS.output_path)
+  writer = tf.python_io.TFRecordWriter(os.path.join(FLAGS.output_path, 'tfrecord'))
 
   label_map_dict = {}
 
@@ -164,6 +165,17 @@ def main(_):
 
   writer.close()
 
+  write_as_pb_text(label_map_dict, os.path.join(FLAGS.output_path, 'labels.pbtxt'))
+
+def write_as_pb_text(label_dict, output_path):
+  file = open(output_path, 'w')
+  def write(txt):
+    file.write(txt + '\n')
+  for (name, id) in label_dict.items():
+    write("item {")
+    write("  id: %s" % id)
+    write("  name: '%s'" % name)
+    write("}")
 
 if __name__ == '__main__':
   tf.app.run()
